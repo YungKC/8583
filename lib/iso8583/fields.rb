@@ -38,6 +38,11 @@ module ISO8583
   # [+YYMM+]         Expiration Date, formatted as named in ASCII numerals
   # [+Hhmmss+]       Date, formatted in ASCII hhmmss
 
+  # Special form to de/encode variable length indicators, two bytes ASCII numerals 
+  L          = Field.new
+  L.name     = "L"
+  L.length   = 1
+  L.codec    = Null_Codec
 
   # Special form to de/encode variable length indicators, two bytes ASCII numerals 
   LL         = Field.new
@@ -60,6 +65,12 @@ module ISO8583
   LL_BCD.name   = "LL_BCD"
   LL_BCD.length = 2
   LL_BCD.codec  = Packed_Number
+
+  # One byte variable length ASCII numeral, payload NUMBER, zeropadded right
+  LVAR_BZ        = Field.new
+  LVAR_BZ.name   = "LVAR_BZ"
+  LVAR_BZ.length = L
+  LVAR_BZ.codec  = Null_Codec
 
   # Two byte variable length ASCII numeral, payload ASCII numerals
   LLVAR_N        = Field.new
