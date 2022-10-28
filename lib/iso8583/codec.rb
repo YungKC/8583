@@ -96,9 +96,20 @@ module ISO8583
     raw.to_i
   }
 
+    
   PASS_THROUGH_DECODER = lambda{|str|
     str.strip # remove padding
   }
+
+  PASS_THROUGH_NO_STRIP_DECODER = lambda{|str|
+binding.pry
+    str
+  }
+
+  PASS_THROUGH_NO_STRIP = Codec.new
+  PASS_THROUGH_NO_STRIP.encoder = PASS_THROUGH_NO_STRIP_DECODER
+  PASS_THROUGH_NO_STRIP.decoder = PASS_THROUGH_NO_STRIP_DECODER
+
 
   # Takes a number or str representation of a number and BCD encodes it, e.g.
   # "1234" => "\x12\x34"

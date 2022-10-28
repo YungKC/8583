@@ -148,6 +148,11 @@ module ISO8583
   A.name  = "A"
   A.codec = A_Codec
 
+  # Pass through
+  PT = Field.new
+  PT.name = "PT"
+  PT.codec = PASS_THROUGH_NO_STRIP
+
   # Fixed lengh ASCII [A-Za-z0-9], padding left justified using spaces.
   AN = Field.new
   AN.name  = "AN"

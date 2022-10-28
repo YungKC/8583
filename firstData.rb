@@ -17,16 +17,18 @@ require 'lib/iso8583'
 module ISO8583
 
   class FirstDataMessage < Message
-    mti_format N, :length => 4
-    mti 0100, "Authorization Request"
-    mti 0110, "Authorization Request Response"
-    mti 1100, "Authorization Request Acquirer Gateway"
-    mti 1110, "Authorization Request Response Issuer Gateway"
-    mti 1420, "Reversal Advice Acquirer Gateway" 
-    mti 1421, "Reversal Advice Repeat Acquirer Gateway" 
-    mti 1430, "Reversal Advice Response Issuer Gateway" 
-    mti 1804, "Network Management Request Acquirer Gateway or Issuer Gateway"
-    mti 1814, "Network Management Request Response Issuer Gateway or Acquirer Gateway"
+    mti_format PT, :length => 2
+    mti "\x01\x00", "Authorization Request"
+    mti "\x01\x10", "Authorization Request Response"
+    mti "\x02\x00", "Authorization/Financial Transaction Request"
+    mti "\x02\x10", "Authorization/Financial Transaction Request Response"
+    mti "\x02\x20", "E-Commerce Debit Completion Request (Non Host Capture)"
+    mti "\x02\x30", "E-Commerce Debit Completion Response (Non Host Capture)"
+    mti "\x04\x00", "Reversal Request"
+    mti "\x04\x10", "Reversal Request Response"
+    mti "\x08\x00", "Network Management Request"
+    mti "\x08\x10", "Network Management Request Response"
+
 
     bmp  2, "Primary Account Number (PAN)",               LVAR_BZ,    :max    => 19
     bmp  3,  "Processing Code",                           N,         :length =>  6
