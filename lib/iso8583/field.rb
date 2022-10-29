@@ -82,13 +82,38 @@ module ISO8583
     end
   end
 
-  class BCDField < Field
+  class BCDHalfField < Field
     # This corrects the length for BCD fields, as their encoded length is half (+ parity) of the
     # content length. E.g. 123 (length = 3) encodes to "\x01\x23" (length 2)
-    def length
-      _length = super
-      (_length % 2) != 0 ? (_length / 2) + 1 : _length / 2
+    def parse(raw)
+      len, raw = case length
+                 when Integer
+                   [length, raw]
+                 when Field
+                   length.parse(raw)
+                 else
+                   raise ISO8583Exception.new("Cannot determine the length of '#{name}' field")
+                 end
+
+      raw_value = raw.byteslice(0,len)
+      
+      # make sure we have enough data ...
+      if raw_value.length != len
+        mes = "Field has incorrect length! field: #{raw_value} len/expected: #{raw_value.length}/#{len}"
+        raise ISO8583ParseException.new(mes)
+      end
+
+      rest = raw.byteslice(len, raw.length)
+      begin
+        real_value = codec.decode(raw_value)
+      rescue
+        raise ISO8583ParseException.new($!.message+" (#{name})")
+      end
+      real_value = (real_value % 2) != 0 ? (real_value / 2) + 1 : real_value / 2
+      [ real_value, rest ]
     end
+
+    # todo: need to figure out how to encode correctly
   end
 
 end

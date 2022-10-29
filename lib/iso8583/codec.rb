@@ -102,7 +102,6 @@ module ISO8583
   }
 
   PASS_THROUGH_NO_STRIP_DECODER = lambda{|str|
-binding.pry
     str
   }
 
@@ -115,15 +114,27 @@ binding.pry
   # "1234" => "\x12\x34"
   # 3456   => "\x34\x56"
   #
-  # right justified with null ... (correct to do this? almost certainly not...)
-  Packed_Number = Codec.new
-  Packed_Number.encoder = lambda { |val|
+  # right justified with null ...
+  Packed_Number_RIGHT = Codec.new
+  Packed_Number_RIGHT.encoder = lambda { |val|
     val = val.to_s
     val = val.length % 2 == 0 ? val : "0"+val
     raise ISO8583Exception.new("Invalid value: #{val} must be numeric!") unless val =~ /^[0-9]*$/
     [val].pack("H*")
   }
-  Packed_Number.decoder = lambda{|encoded|
+  Packed_Number_RIGHT.decoder = lambda{|encoded|
+    encoded.unpack("H*")[0].to_i
+  }
+
+  # left justified with null ...
+  Packed_Number_LEFT = Codec.new
+  Packed_Number_LEFT.encoder = lambda { |val|
+    val = val.to_s
+    val = val.length % 2 == 0 ? val : val+"0"
+    raise ISO8583Exception.new("Invalid value: #{val} must be numeric!") unless val =~ /^[0-9]*$/
+    [val].pack("H*")
+  }
+  Packed_Number_LEFT.decoder = lambda{|encoded|
     encoded.unpack("H*")[0].to_i
   }
 
@@ -215,6 +226,7 @@ binding.pry
     }
     c.decoder = lambda {|str|
       begin
+        str=str.unpack("H*")[0]
         DateTime.strptime(str, fmt)
       rescue
         raise ISO8583Exception.new("Invalid format decoding: #{str}, must be #{fmt}.")
@@ -229,5 +241,4 @@ binding.pry
   YYMMDDhhmmssCodec = _date_codec("%y%m%d%H%M%S")
   YYMMCodec         = _date_codec("%y%m")
   MMDDCodec         = _date_codec("%m%d")
-
 end

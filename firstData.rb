@@ -30,23 +30,23 @@ module ISO8583
     mti "\x08\x10", "Network Management Request Response"
 
 
-    bmp  2, "Primary Account Number (PAN)",               LVAR_BZ,    :max    => 19
-    bmp  3,  "Processing Code",                           N,         :length =>  6
-    bmp  4,  "Amount (Transaction)",                      N,         :length => 12
-    bmp  6,  "Amount, Cardholder Billing" ,               N,         :length => 12
+    bmp  2, "Primary Account Number (PAN)",               LVAR_BCDZ, :max    => 19
+    bmp  3,  "Processing Code",                           N_BCD,     :length =>  3
+    bmp  4,  "Amount (Transaction)",                      N_BCD,     :length =>  6
     bmp  7,  "Date and Time, Transmission"  ,             MMDDhhmmss
-    bmp 10, "Conversion Rate, Cardholder Billing",        N,         :length =>  8
-    bmp 11, "System Trace Audit Number (STAN)",           N,         :length =>  6
-    bmp 12, "Date and Time, Local Transaction",           YYMMDDhhmmss
-    bmp 14, "Date, Expiration",                           YYMM
-    bmp 22, "POS Data Code",                              AN,        :length => 12
-    bmp 23, "Card Sequence Number",                       N,         :length =>  3
-    bmp 24, "Function Code",                              N,         :length =>  3
-    bmp 25, "Message Reason Code",                        N,         :length =>  4
-    bmp 26, "Card Acceptor Business Code",                N,         :length =>  4
-    bmp 30, "Amounts, Original",                          N,         :length => 24
-    bmp 32, "Acquiring Institution Identification Code",  LLVAR_N,   :max    => 11
-    bmp 35, "Track 2 Data",                               LLVAR_Z,   :max    => 37
+    bmp 11, "System Trace Audit Number (STAN)",           N_BCD,     :length =>  3
+    bmp 12, "Time, Local Transmission",                   Hhmmss
+    bmp 13, "Date, Local Transmission",                   MMDD
+    bmp 14, "Date, Expiration",                           N_BCD,     :length =>  2
+    bmp 18, "Merchant Catagory",                          N_BCD,     :length =>  2
+    bmp 22, "POS Entry Mode & Capabilities",              N_BCD,     :length =>  2
+    bmp 23, "Card Sequence Number",                       N_BCD,     :length =>  2
+    bmp 24, "Network Internation ID",                     N_BCD,     :length =>  2
+    bmp 25, "POS Condition Code",                         N_BCD,     :length =>  1
+    bmp 28, "Merchant Surcharge",                         ANS,       :length =>  9
+    bmp 31, "Acquirer Reference Data",                    LLVAR_BCDZ,:max    => 99 #TODO: payload is ASCII, not packed numbers
+    bmp 32, "Acquiring Institution Identification Code",  LVAR_BCDZ, :max    => 6
+    bmp 35, "Track 2 Data",                               LLVAR_BCDZ,:max    => 37
     bmp 37, "Retrieval Reference Number",                 ANP,       :length => 12
     bmp 38, "Approval Code",                              ANP,       :length =>  6
     bmp 39, "Action Code",                                N,         :length =>  3
@@ -75,7 +75,28 @@ end
 
 if __FILE__==$0
 
-#{“message_type”=>“\u0001\u0000", “card_type”=>“Visa”, “pan”=>“3566007770017510", “transaction_processing_code”=>“000000", “amount”=>“000000003650", “transmission_datetime”=>“0504191856", “system_trace”=>“000099", “transaction_time”=>“151856", “transaction_date”=>“0504", “card_expiration_date”=>“2512", “merchant_category_code”=>“5045", “pos_mode_and_pin_capability”=>“0901", “network_intl_id”=>“0001", “pos_condition_code”=>“00", “track2_data”=>“3566007770017510d251210123456789", “retrieval_reference_number”=>“0000CXQJ7DFS”, “terminal_id”=>“2a28fab7", “merchant_id”=>“000445190514999", “alternate_merchant_name_location”=>“DESCRIPTOR          12115 LACKLAND      CHICAGO       IL  63146  USA        “, “currency_code”=>“0840", “merchant_postal_code”=>“631460000", “additional_pos_information”=>“45", “table_data”=>“”, “aci”=>“X”, “transaction_identifier”=>”        “, “validation_code”=>”  “, “market_specific_indicator”=>” “, “rps”=>” “, “first_authorized_amount”=>“000000000000", “total_authorized_amount”=>“000000000000", “version”=>“01", “balance_info”=>“1", “partial_approval”=>“1", “number_of_entries”=>“1", “visa_id”=>“\v”, “agent_unique_id”=>”   “, “visa_auar”=>“\u0000\u0000\u0000\u0000\u0000\u0000", “tpp_id”=>“TBT114", “tc”=>“TC015400111100000000", “ar”=>“AR0040000"}
+#{“message_type”=>“\u0001\u0000", “card_type”=>“Visa”, “pan”=>“3566007770017510", “transaction_processing_code”=>“000000", 
+# “amount”=>“000000003650", “transmission_datetime”=>“0504191856", “system_trace”=>“000099", 
+# “transaction_time”=>“151856", “transaction_date”=>“0504", “card_expiration_date”=>“2512", 
+# “merchant_category_code”=>“5045", “pos_mode_and_pin_capability”=>“0901", “network_intl_id”=>“0001", 
+# “pos_condition_code”=>“00", “track2_data”=>“3566007770017510d251210123456789",
+# “retrieval_reference_number”=>“0000CXQJ7DFS”, “terminal_id”=>“2a28fab7", “merchant_id”=>“000445190514999", 
+# “alternate_merchant_name_location”=>“DESCRIPTOR          12115 LACKLAND      CHICAGO       IL  63146  USA        “, 
+# “currency_code”=>“0840", “merchant_postal_code”=>“631460000", “additional_pos_information”=>“45", “table_data”=>“”, 
+# “aci”=>“X”, “transaction_identifier”=>”        “, “validation_code”=>”  “, “market_specific_indicator”=>” “, 
+# “rps”=>” “, “first_authorized_amount”=>“000000000000", “total_authorized_amount”=>“000000000000", “version”=>“01", 
+# “balance_info”=>“1", “partial_approval”=>“1", “number_of_entries”=>“1", “visa_id”=>“\v”, “agent_unique_id”=>”   “, 
+# “visa_auar”=>“\u0000\u0000\u0000\u0000\u0000\u0000", “tpp_id”=>“TBT114", “tc”=>“TC015400111100000000", “ar”=>“AR0040000"}
+
+
+
+###  25f\x00wp\x01u\x10\xD2Q!\x01#Eg\x890000CXQJ7DFS2a28fab
+
+# \x01\x00
+# r<E\x80(\xE0\x802
+# \x165f\x00wp\x01u\x10
+# \x00\x00\x00
+# \x00\x00\x00\x006P
 
 
   intext = "\x01\x00r<E\x80(\xE0\x802\x165f\x00wp\x01u\x10\x00\x00\x00\x00\x00\x00\x006P\x05\x04\x19\x18V\x00\x00\x99\x15\x18V\x05\x04%\x12PE\t\x01\x00\x01\x0025f\x00wp\x01u\x10\xD2Q!\x01#Eg\x890000CXQJ7DFS2a28fab7000445190514999DESCRIPTOR                    12115 LACKLAND           CHICAGO             IL   63146    USA               \b@\t631460000E\x01\x19\x00H14X                     000000000000000000000000\x00\x0568211\x00#69011\v     \x00\x00\x00\x00\x00\x00TBT114\x00\x02DS\x001SDTC015400111100000000AR0040000”\

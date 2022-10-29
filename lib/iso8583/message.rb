@@ -357,6 +357,7 @@ module ISO8583
         bmp.each {|bit|
           bmp_def      = message._get_definition(bit)
           value, rest  = bmp_def.field.parse(rest)
+binding.pry
           message[bit] = value
         }
         message

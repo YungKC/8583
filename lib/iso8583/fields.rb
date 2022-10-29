@@ -38,7 +38,7 @@ module ISO8583
   # [+YYMM+]         Expiration Date, formatted as named in ASCII numerals
   # [+Hhmmss+]       Date, formatted in ASCII hhmmss
 
-  # Special form to de/encode variable length indicators, two bytes ASCII numerals 
+  # Special form to de/encode variable length indicators, one bytes ASCII numerals 
   L          = Field.new
   L.name     = "L"
   L.length   = 1
@@ -61,10 +61,33 @@ module ISO8583
     sprintf("%03d", value)
   }
 
-  LL_BCD        = BCDField.new
+  
+  L_BCDHalf        = BCDHalfField.new
+  L_BCDHalf.name   = "L_BCDHalf"
+  L_BCDHalf.length = 1
+  L_BCDHalf.codec  = Packed_Number_RIGHT
+
+  L_BCDTwoHalf        = BCDHalfField.new
+  L_BCDTwoHalf.name   = "L_BCDTwoHalf"
+  L_BCDTwoHalf.length = 2
+  L_BCDTwoHalf.codec  = Packed_Number_RIGHT
+
+  LL_BCD        = Field.new
   LL_BCD.name   = "LL_BCD"
   LL_BCD.length = 2
-  LL_BCD.codec  = Packed_Number
+  LL_BCD.codec  = Packed_Number_RIGHT
+
+  # Half byte variable length Packed numeral, payload Packed NUMBER, zeropadded right (left justified)
+  LVAR_BCDZ        = Field.new
+  LVAR_BCDZ.name   = "LVAR_BCDZ"
+  LVAR_BCDZ.length = L_BCDHalf
+  LVAR_BCDZ.codec  = Packed_Number_LEFT
+
+  # One byte variable length Packed numeral, payload Packed NUMBER, zeropadded right (left justified)
+  LLVAR_BCDZ        = Field.new
+  LLVAR_BCDZ.name   = "LLVAR_BCDZ"
+  LLVAR_BCDZ.length = L_BCDTwoHalf
+  LLVAR_BCDZ.codec  = Packed_Number_LEFT
 
   # One byte variable length ASCII numeral, payload NUMBER, zeropadded right
   LVAR_BZ        = Field.new
@@ -135,9 +158,9 @@ module ISO8583
     sprintf("%0#{len}d", val)
   }
 
-  N_BCD = BCDField.new
+  N_BCD = Field.new
   N_BCD.name  = "N_BCD"
-  N_BCD.codec = Packed_Number
+  N_BCD.codec = Packed_Number_RIGHT
 
   PADDING_LEFT_JUSTIFIED_SPACES = lambda {|val, len|
     sprintf "%-#{len}s", val
@@ -186,28 +209,28 @@ module ISO8583
   MMDDhhmmss        = Field.new
   MMDDhhmmss.name   = "MMDDhhmmss"
   MMDDhhmmss.codec  = MMDDhhmmssCodec
-  MMDDhhmmss.length = 10
+  MMDDhhmmss.length = 5
 
   #Date, formatted as described in ASCII numerals
   YYMMDDhhmmss        = Field.new
   YYMMDDhhmmss.name   = "YYMMDDhhmmss"
   YYMMDDhhmmss.codec  = YYMMDDhhmmssCodec
-  YYMMDDhhmmss.length = 12
+  YYMMDDhhmmss.length = 6
 
   #Date, formatted as described in ASCII numerals
   YYMM        = Field.new
   YYMM.name   = "YYMM"
   YYMM.codec  = YYMMCodec
-  YYMM.length = 4
+  YYMM.length = 2
   
   MMDD        = Field.new
   MMDD.name   = "MMDD"
   MMDD.codec  = MMDDCodec
-  MMDD.length = 4
+  MMDD.length = 2
 
   Hhmmss        = Field.new
   Hhmmss.name   = "Hhmmss"
   Hhmmss.codec  = HhmmssCodec
-  Hhmmss.length = 6
+  Hhmmss.length = 3
 
 end
