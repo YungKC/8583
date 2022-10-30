@@ -61,7 +61,11 @@ module ISO8583
     sprintf("%03d", value)
   }
 
-  
+  L_BCD        = BCDField.new
+  L_BCD.name   = "L_BCD"
+  L_BCD.length = 1
+  L_BCD.codec  = Packed_Number_RIGHT
+
   L_BCDHalf        = BCDHalfField.new
   L_BCDHalf.name   = "L_BCDHalf"
   L_BCDHalf.length = 1
@@ -77,17 +81,28 @@ module ISO8583
   LL_BCD.length = 2
   LL_BCD.codec  = Packed_Number_RIGHT
 
-  # Half byte variable length Packed numeral, payload Packed NUMBER, zeropadded right (left justified)
-  LVAR_BCDZ        = Field.new
-  LVAR_BCDZ.name   = "LVAR_BCDZ"
-  LVAR_BCDZ.length = L_BCDHalf
-  LVAR_BCDZ.codec  = Packed_Number_LEFT
+  LLL_BCD        = Field.new
+  LLL_BCD.name   = "LLL_BCD"
+  LLL_BCD.length = 3
+  LLL_BCD.codec  = Packed_Number_RIGHT
 
-  # One byte variable length Packed numeral, payload Packed NUMBER, zeropadded right (left justified)
-  LLVAR_BCDZ        = Field.new
-  LLVAR_BCDZ.name   = "LLVAR_BCDZ"
-  LLVAR_BCDZ.length = L_BCDTwoHalf
-  LLVAR_BCDZ.codec  = Packed_Number_LEFT
+  # length halved variable length Packed numeral, payload Packed NUMBER, zeropadded right (left justified)
+  LLVAR_BCDZNibble        = Field.new
+  LLVAR_BCDZNibble.name   = "LLVAR_BCDZNibble"
+  LLVAR_BCDZNibble.length = L_BCDHalf
+  LLVAR_BCDZNibble.codec  = Packed_Number_LEFT
+
+  # length halved variable length Packed numeral, payload Packed NUMBER, zeropadded right (left justified)
+  LLVAR_BCANZNibble        = Field.new
+  LLVAR_BCANZNibble.name   = "LLVAR_BCANZNibble"
+  LLVAR_BCANZNibble.length = L_BCDHalf
+  LLVAR_BCANZNibble.codec  = Packed_LEFT
+
+  # length halved variable length Packed numeral, payload Packed NUMBER, zeropadded right (left justified)
+  LLVAR_BCANZ        = Field.new
+  LLVAR_BCANZ.name   = "LLVAR_BCANZ"
+  LLVAR_BCANZ.length = L_BCD
+  LLVAR_BCANZ.codec  = Packed_LEFT
 
   # One byte variable length ASCII numeral, payload NUMBER, zeropadded right
   LVAR_BZ        = Field.new
@@ -119,23 +134,35 @@ module ISO8583
   LLVAR_AN.length = LL
   LLVAR_AN.codec  = AN_Codec
 
-  # Two byte variable length ASCII numeral, payload ASCII+special
+  # One byte variable length ASCII numeral, payload ASCII+special
+  LVAR_ANS        = Field.new
+  LVAR_ANS.name   = "LVAR_ANS"
+  LVAR_ANS.length = L_BCD
+  LVAR_ANS.codec  = ANS_Codec
+
+  # Two nibble variable length ASCII numeral, payload ASCII+special
   LLVAR_ANS        = Field.new
   LLVAR_ANS.name   = "LLVAR_ANS"
-  LLVAR_ANS.length = LL
+  LLVAR_ANS.length = L_BCD
   LLVAR_ANS.codec  = ANS_Codec
 
-  # Three byte variable length ASCII numeral, payload ASCII, fixed length, zeropadded (right)
+  # Three nibble variable length ASCII numeral, payload ASCII, fixed length, zeropadded (right)
   LLLVAR_AN        = Field.new
   LLLVAR_AN.name   = "LLLVAR_AN"
-  LLLVAR_AN.length = LLL
+  LLLVAR_AN.length = LL_BCD
   LLLVAR_AN.codec  = AN_Codec
 
-  # Three byte variable length ASCII numeral, payload ASCII+special
+  # Three nibble variable length ASCII numeral, payload ASCII+special
   LLLVAR_ANS        = Field.new
   LLLVAR_ANS.name   = "LLLVAR_ANS"
-  LLLVAR_ANS.length = LLL
+  LLLVAR_ANS.length = LL_BCD
   LLLVAR_ANS.codec  = ANS_Codec
+
+  # Four nibble variable length ASCII numeral, payload ASCII+special
+  LLLLVAR_ANS        = Field.new
+  LLLLVAR_ANS.name   = "LLLLVAR_ANS"
+  LLLLVAR_ANS.length = LL_BCD
+  LLLLVAR_ANS.codec  = ANS_Codec
 
   # Two byte variable length binary payload
   LLVAR_B        = Field.new

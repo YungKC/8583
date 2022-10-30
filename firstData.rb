@@ -30,7 +30,7 @@ module ISO8583
     mti "\x08\x10", "Network Management Request Response"
 
 
-    bmp  2, "Primary Account Number (PAN)",               LVAR_BCDZ, :max    => 19
+    bmp  2, "Primary Account Number (PAN)",               LLVAR_BCDZNibble,:max    => 19
     bmp  3,  "Processing Code",                           N_BCD,     :length =>  3
     bmp  4,  "Amount (Transaction)",                      N_BCD,     :length =>  6
     bmp  7,  "Date and Time, Transmission"  ,             MMDDhhmmss
@@ -44,26 +44,27 @@ module ISO8583
     bmp 24, "Network Internation ID",                     N_BCD,     :length =>  2
     bmp 25, "POS Condition Code",                         N_BCD,     :length =>  1
     bmp 28, "Merchant Surcharge",                         ANS,       :length =>  9
-    bmp 31, "Acquirer Reference Data",                    LLVAR_BCDZ,:max    => 99 #TODO: payload is ASCII, not packed numbers
-    bmp 32, "Acquiring Institution Identification Code",  LVAR_BCDZ, :max    => 6
-    bmp 35, "Track 2 Data",                               LLVAR_BCDZ,:max    => 37
+    bmp 31, "Acquirer Reference Data",                    LLVAR_BCANZ, :max    => 99 #payload is ASCII, not packed numbers
+    bmp 32, "Acquiring Institution Identification Code",  LLVAR_BCDZNibble, :max    => 6
+    bmp 35, "Track 2 Data",                               LLVAR_BCANZNibble, :max    => 37
     bmp 37, "Retrieval Reference Number",                 ANP,       :length => 12
     bmp 38, "Approval Code",                              ANP,       :length =>  6
     bmp 39, "Action Code",                                N,         :length =>  3
     bmp 41, "Card Acceptor Terminal Identification",      ANS,       :length =>  8
     bmp 42, "Card Acceptor Identification Code",          ANS,       :length => 15
-    bmp 43, "Card Acceptor Name/Location",                LLVAR_ANS, :max    => 56
-    bmp 49, "Currency Code, Transaction",                 N,         :length =>  3
-    bmp 51, "Currency Code, Cardholder Billing",          N,         :length =>  3
-    bmp 52, "Personal Identification Number (PIN) Data",  B,         :length =>  8
-    bmp 53, "Security Related Control Information",       LLVAR_B,   :max    => 48
-    bmp 54, "Amounts, Additional",                        LLLVAR_ANS,:max    => 40
+    bmp 43, "Card Acceptor Name/Location",                ANS,       :length => 107
+#    bmp 44, "Additional Response Data",                  LLLLVAR_BCANZ
+    bmp 45, "Track 1 Data",                               LLVAR_BCANZ,:max    => 76
+#    bmp 48, "First Data Private Use Data Element",                               
 
-    bmp 55, "Integrated Circuit Card (ICC) System Related Data", LLLVAR_B,   :max    => 255
-    bmp 56, "Original Data Elements",                            LLVAR_N,    :max    => 35
-    bmp 58, "Authorizing Agent Institution Identification Code", LLVAR_N,    :max    => 11
-    bmp 59, "Additional Data - Private",                         LLLVAR_ANS, :max    => 67
-    bmp 64, "Message Authentication Code (MAC) Field",           B,          :length => 8
+    bmp 49, "Transaction Currency Code",                  N_BCD,     :length =>  2
+    bmp 52, "Encrypted PIN Data",                         B,         :length =>  8
+    bmp 54, "Amounts, Additional",                        LLLLVAR_ANS, :max    => 12
+    bmp 55, "EMV Data",                                   LLLLVAR_ANS, :max    => 999    
+    bmp 59, "Merchant Zip/Postal Code",                   LVAR_ANS,  :max    => 9
+    bmp 60, "Additional POS Information",                 N_BCD,     :length => 1
+
+    bmp 63, "First Data Private Use Data Element",        LLLVAR_ANS, :max    => 999
     
     bmp_alias  2, :pan
     bmp_alias  3, :proc_code
@@ -90,13 +91,9 @@ if __FILE__==$0
 
 
 
-###  25f\x00wp\x01u\x10\xD2Q!\x01#Eg\x890000CXQJ7DFS2a28fab
+###  field 63
+# "\x01\x19\x00H14X                     000000000000000000000000\x00\x0568211\x00#69011\v     \x00\x00\x00\x00\x00\x00TBT114\x00\x02DS\x001SDTC015400111100000000AR0040000\xE2\x80\x9D[0cfc37bf-5bbc-4c17-9fdb-35349a6e78d4] [FIRSTDATA AUTH CONNECTION] Response: \xE2\x80\x9C\x01\x102 \x01\x80\x0E\x80\x00\x02\x00\x00\x00\x00\x00\x00\x006P\x05\x04\x19\x18V\x00\x00\x99\x00\x01\x000000CXQJ7DFSOK8204002a28fab7\x01\x99\x00H14X165169193623112      000000000000000000000000\x00\x1822APPROVAL        \x00\x86DS01000000\x1C02110212\x1C030210\x1C04151856\x1C050504\x1C0600\x1C070200010010500\x1C0802\x1C10165169193623112\x009SDZX003EAVTC015400111100000000AR004O   "
 
-# \x01\x00
-# r<E\x80(\xE0\x802
-# \x165f\x00wp\x01u\x10
-# \x00\x00\x00
-# \x00\x00\x00\x006P
 
 
   intext = "\x01\x00r<E\x80(\xE0\x802\x165f\x00wp\x01u\x10\x00\x00\x00\x00\x00\x00\x006P\x05\x04\x19\x18V\x00\x00\x99\x15\x18V\x05\x04%\x12PE\t\x01\x00\x01\x0025f\x00wp\x01u\x10\xD2Q!\x01#Eg\x890000CXQJ7DFS2a28fab7000445190514999DESCRIPTOR                    12115 LACKLAND           CHICAGO             IL   63146    USA               \b@\t631460000E\x01\x19\x00H14X                     000000000000000000000000\x00\x0568211\x00#69011\v     \x00\x00\x00\x00\x00\x00TBT114\x00\x02DS\x001SDTC015400111100000000AR0040000”\

@@ -138,6 +138,16 @@ module ISO8583
     encoded.unpack("H*")[0].to_i
   }
 
+  Packed_LEFT = Codec.new
+  Packed_LEFT.encoder = lambda { |val|
+    val = val.to_s
+    val = val.length % 2 == 0 ? val : val+"0"
+    [val].pack("H*")
+  }
+  Packed_LEFT.decoder = lambda{|encoded|
+    encoded.unpack("H*")[0]
+  }
+
   A_Codec = Codec.new
   A_Codec.encoder = lambda{|str|
     raise ISO8583Exception.new("Invalid value: #{str} must be [A-Za-z]") unless str =~ /^[A-Za-z]*$/
