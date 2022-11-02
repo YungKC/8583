@@ -85,7 +85,9 @@ end
 
 if __FILE__==$0
 
-
+for arg in ARGV
+  puts arg
+end
 
 #"\x01\x00r<E\x80(\xE0\x802\x165f\x00wp\x01u\x10\x00\x00\x00\x00\x00\x00\x006P\x05\x04\x19\x18V\x00\x00\x99\x15\x18V\x05\x04%\x12PE\t\x01\x00\x01\x0025f\x00wp\x01u\x10\xD2Q!\x01#Eg\x890000CXQJ7DFS2a28fab7000445190514999DESCRIPTOR                    12115 LACKLAND           CHICAGO             IL   63146    USA               \b@\t631460000E
 # \x01\x19
@@ -94,9 +96,23 @@ if __FILE__==$0
 # \x00#69011\v     \x00\x00\x00\x00\x00\x00TBT114\x00\x02DS\x001SDTC015400111100000000AR0040000”\
 # [0cfc37bf-5bbc-4c17-9fdb-35349a6e78d4] [FIRSTDATA AUTH CONNECTION] Response: “\x01\x102 \x01\x80\x0E\x80\x00\x02\x00\x00\x00\x00\x00\x00\x006P\x05\x04\x19\x18V\x00\x00\x99\x00\x01\x000000CXQJ7DFSOK8204002a28fab7\x01\x99\x00H14X165169193623112      000000000000000000000000\x00\x1822APPROVAL        \x00\x86DS01000000\x1C02110212\x1C030210\x1C04151856\x1C050504\x1C0600\x1C070200010010500\x1C0802\x1C10165169193623112\x009SDZX003EAVTC015400111100000000AR004O   "
 
+#binding.pry
 
-  intext = "\x01\x00r<E\x80(\xE0\x802\x165f\x00wp\x01u\x10\x00\x00\x00\x00\x00\x00\x006P\x05\x04\x19\x18V\x00\x00\x99\x15\x18V\x05\x04%\x12PE\t\x01\x00\x01\x0025f\x00wp\x01u\x10\xD2Q!\x01#Eg\x890000CXQJ7DFS2a28fab7000445190514999DESCRIPTOR                    12115 LACKLAND           CHICAGO             IL   63146    USA               \b@\t631460000E\x01\x19\x00H14X                     000000000000000000000000\x00\x0568211\x00#69011\v     \x00\x00\x00\x00\x00\x00TBT114\x00\x02DS\x001SDTC015400111100000000AR0040000"
+def unescape(s)
+  "\"#{s}\"".undump
+end
+
+if ARGV.length >= 1
+  inText = unescape(ARGV[0].dup)
+  if ARGV.length == 2
+    responseText = unescape(ARGV[1].dup)
+  else
+    responseText = nil
+  end
+else
+  inText = "\x01\x00r<E\x80(\xE0\x802\x165f\x00wp\x01u\x10\x00\x00\x00\x00\x00\x00\x006P\x05\x04\x19\x18V\x00\x00\x99\x15\x18V\x05\x04%\x12PE\t\x01\x00\x01\x0025f\x00wp\x01u\x10\xD2Q!\x01#Eg\x890000CXQJ7DFS2a28fab7000445190514999DESCRIPTOR                    12115 LACKLAND           CHICAGO             IL   63146    USA               \b@\t631460000E\x01\x19\x00H14X                     000000000000000000000000\x00\x0568211\x00#69011\v     \x00\x00\x00\x00\x00\x00TBT114\x00\x02DS\x001SDTC015400111100000000AR0040000"
   responseText = "\x01\x102 \x01\x80\x0E\x80\x00\x02\x00\x00\x00\x00\x00\x00\x006P\x05\x04\x19\x18V\x00\x00\x99\x00\x01\x000000CXQJ7DFSOK8204002a28fab7\x01\x99\x00H14X165169193623112      000000000000000000000000\x00\x1822APPROVAL        \x00\x86DS01000000\x1C02110212\x1C030210\x1C04151856\x1C050504\x1C0600\x1C070200010010500\x1C0802\x1C10165169193623112\x009SDZX003EAVTC015400111100000000AR004O   "
+end
   #[0cfc37bf-5bbc-4c17-9fdb-35349a6e78d4] [FIRSTDATA AUTH CONNECTION] Response: “\x01\x102 \x01\x80\x0E\x80\x00\x02\x00\x00\x00\x00\x00\x00\x006P\x05\x04\x19\x18V\x00\x00\x99\x00\x01\x000000CXQJ7DFSOK8204002a28fab7\x01\x99\x00H14X165169193623112      000000000000000000000000\x00\x1822APPROVAL        \x00\x86DS01000000\x1C02110212\x1C030210\x1C04151856\x1C050504\x1C0600\x1C070200010010500\x1C0802\x1C10165169193623112\x009SDZX003EAVTC015400111100000000AR004O   "
 
 #  {“message_type”=>“\u0001\u0000", “card_type”=>“Visa”, “pan”=>“3566007770017510", 
@@ -114,21 +130,24 @@ if __FILE__==$0
 # “number_of_entries”=>“1", “visa_id”=>“\v”, “agent_unique_id”=>”   “, 
 # “visa_auar”=>“\u0000\u0000\u0000\u0000\u0000\u0000", “tpp_id”=>“TBT114", “tc”=>“TC015400111100000000", “ar”=>“AR0040000"}
 
-  mes2 = ISO8583::FirstDataMessage.parse intext
+  mes2 = ISO8583::FirstDataMessage.parse inText
  
 
-#binding.pry
-  mes3 = ISO8583::FirstDataMessage.parse responseText
 
+  if responseText != nil
+    mes3 = ISO8583::FirstDataMessage.parse responseText
+  end
 
   puts "-------   request    ------"
   puts ""
   puts mes2.to_s
   puts ""
-  puts "--------  response   ------"
-  puts ""
-  puts mes3.to_s
-  puts ""
+  if responseText != nil
+    puts "--------  response   ------"
+    puts ""
+    puts mes3.to_s
+    puts ""
+  end
 
   puts "======    JSON   =========="
   puts ""
@@ -136,10 +155,12 @@ if __FILE__==$0
   puts ""
   puts JSON.pretty_generate(mes2.to_h)
   puts ""
-  puts "-------   response    ------"
-  puts ""
-  puts JSON.pretty_generate(mes3.to_h)
-  puts ""
+  if responseText != nil
+    puts "-------   response    ------"
+    puts ""
+    puts JSON.pretty_generate(mes3.to_h)
+    puts ""
+  end
 
 #  mes = ISO8583::FirstDataMessage.new
 #  mes.mti = 0100
