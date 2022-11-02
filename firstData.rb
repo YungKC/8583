@@ -115,15 +115,32 @@ if __FILE__==$0
 # “visa_auar”=>“\u0000\u0000\u0000\u0000\u0000\u0000", “tpp_id”=>“TBT114", “tc”=>“TC015400111100000000", “ar”=>“AR0040000"}
 
   mes2 = ISO8583::FirstDataMessage.parse intext
-  puts mes2.to_s
+ 
 
 #binding.pry
   mes3 = ISO8583::FirstDataMessage.parse responseText
-  puts mes3.to_s
+
+
   puts "-------   request    ------"
-  puts mes2.to_json
+  puts ""
+  puts mes2.to_s
+  puts ""
   puts "--------  response   ------"
-  puts mes3.to_json
+  puts ""
+  puts mes3.to_s
+  puts ""
+
+  puts "======    JSON   =========="
+  puts ""
+  puts "-------   request    ------"
+  puts ""
+  puts JSON.pretty_generate(mes2.to_h)
+  puts ""
+  puts "-------   response    ------"
+  puts ""
+  puts JSON.pretty_generate(mes3.to_h)
+  puts ""
+
 #  mes = ISO8583::FirstDataMessage.new
 #  mes.mti = 0100
 #  mes[2] = 474747474747

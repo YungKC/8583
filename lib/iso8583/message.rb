@@ -196,6 +196,17 @@ module ISO8583
       str
     end
 
+    def to_h
+      result = Hash.new
+      _mti_name = _get_mti_definition(mti)[1]
+      result["MTI"] = "#{mti} (#{_mti_name})"
+      @values.keys.sort.each{|bmp_num|
+        _bmp = @values[bmp_num]
+        result["#{bmp_num}, #{_bmp.name}"] = _bmp.value
+      }
+      result
+    end
+
 
     # METHODS starting with an underscore are meant for
     # internal use only ...
