@@ -89,24 +89,25 @@ module ISO8583
       length, encoded = LL_BCD.parse(encoded)
       table_id = encoded.byteslice(0,2)
 #      table_id = table_id.unpack("H*")[0]
-      table_data = encoded.byteslice(2,length)
+      table_data = encoded.byteslice(2,length-2)
       remain = encoded.byteslice(length,encoded.length)
       [table_id, table_data, remain]
     end
 
     def self.decode_table(table_id, data)
-      raise ISO8583Exception.new("Supports table 14 only for now!")  if table_id != "14"
+#      raise ISO8583Exception.new("Supports table 14 only for now, but received #{table_id}!")  if table_id != "14"
       result = Hash.new
-      [result]
+      [{table_id=>data}]
     end
   end
 
   FD_63_Data = FD_63_Field_Codec.new
-  result = Hash.new
   FD_63_Data.decoder = lambda{|encoded|
+binding.pry
+    result = Hash.new
     while encoded.length > 0
       table_id, data, encoded = FD_63_Field_Codec::extract_table(encoded)
-      table_result = FD_63_Field_Codec::decode_table(table_id, data)
+      table_result = FD_63_Field_Codec::decode_table(table_id, data)[0]
       result = result.merge(table_result)
     end
     [result]
