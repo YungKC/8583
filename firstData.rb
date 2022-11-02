@@ -37,7 +37,7 @@ module ISO8583
     bmp  2, "Primary Account Number (PAN)",               LLVAR_BCDZNibble,:max    => 19
     bmp  3,  "Processing Code",                           N_BCD,     :length =>  3
     bmp  4,  "Amount (Transaction)",                      N_BCD,     :length =>  6
-    bmp  7,  "Date and Time, Transmission"  ,             N_BCD,     :length =>  5
+    bmp  7,  "Date and Time, Transmission"  ,             MMDDhhmmss,:length =>  5
     bmp 11, "System Trace Audit Number (STAN)",           N_BCD,     :length =>  3
     bmp 12, "Time, Local Transmission",                   N_BCD,     :length =>  3
     bmp 13, "Date, Local Transmission",                   N_BCD,     :length =>  2
