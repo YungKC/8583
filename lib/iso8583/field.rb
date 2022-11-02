@@ -152,4 +152,5 @@ module ISO8583
     # todo: need to figure out how to encode correctly
   end
 
+
 end

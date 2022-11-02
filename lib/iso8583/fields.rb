@@ -260,4 +260,16 @@ module ISO8583
   Hhmmss.codec  = HhmmssCodec
   Hhmmss.length = 3
 
+
+
+  # FirstData's Bit 63 Format
+  # Three nibble variable length ASCII numeral, payload FD_63_Field_Content
+  FD_63_Field       = Field.new
+  FD_63_Field.name   = "FD_63_Field"
+  FD_63_Field.length = LL_BCD
+  FD_63_Field.codec  = FD_63_Data
+
+
+
+
 end
