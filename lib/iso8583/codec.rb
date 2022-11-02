@@ -103,14 +103,13 @@ module ISO8583
 
   FD_63_Data = FD_63_Field_Codec.new
   FD_63_Data.decoder = lambda{|encoded|
-binding.pry
     result = Hash.new
     while encoded.length > 0
       table_id, data, encoded = FD_63_Field_Codec::extract_table(encoded)
       table_result = FD_63_Field_Codec::decode_table(table_id, data)[0]
       result = result.merge(table_result)
     end
-    [result]
+    result
   }
 
   # ASCII_Number

@@ -356,7 +356,6 @@ module ISO8583
         bmp,rest = Bitmap.parse(rest)
         bmp.each {|bit|
           bmp_def      = message._get_definition(bit)
-if bit>=63 then binding.pry end
           value, rest  = bmp_def.field.parse(rest)
           message[bit] = value
         }
